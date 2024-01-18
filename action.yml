@@ -1,0 +1,46 @@
+name: 'pyupio/safety-action'
+description: 'Runs the Safety CLI dependency scanner against your project'
+inputs:
+  api-key:
+    description: 'Safety CLI API key'
+    required: true
+    default: ''
+  output-format:
+    description: 'Output format for returned data. One of screen / json / html / spdx (defaults to screen)'
+    required: false
+    default: 'screen'
+  args:
+    description: '[Advanced] Any additional arguments to pass to Safety'
+    required: false
+    default: ''
+  repo-token:
+    required: false
+    default: ''
+  debug:
+    required: false
+    default: false
+
+outputs:
+  cli-output:
+    description: 'CLI output from Safety'
+  exit-code:
+    description: 'Exit code from Safety'
+
+runs:
+  using: "docker"
+  image: "Dockerfile"
+  env:
+    SAFETY_API_KEY: ${{ inputs.api-key }}
+    SAFETY_DEBUG: ${{ inputs.debug }}
+    SAFETY_ACTION_OUTPUT_FORMAT: ${{ inputs.output-format }}
+    SAFETY_ACTION_ARGS: ${{ inputs.args }}
+    GITHUB_TOKEN: ${{ inputs.repo-token }}
+    SAFETY_ACTION_VERSION: 1.0.0
+    SAFETY_ACTION: true
+    COLUMNS: 120
+    FORCE_COLOR: 1
+    NON_INTERACTIVE: 1
+
+branding:
+  icon: 'lock'
+  color: 'purple'

@@ -1,0 +1,147 @@
+name: Safety Action CI
+
+on:
+  push:
+
+jobs:
+  matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: set-matrix
+        run: |
+          TASKS=$(echo $(cat .github/workflows/gh-action-integration-matrix.json) | sed 's/ //g' )
+          echo "matrix=$TASKS" >> $GITHUB_OUTPUT
+
+  test-requirements-txt-insecure:
+    needs: [ matrix ]
+    runs-on: ubuntu-latest
+    environment: main
+    strategy:
+      matrix:
+        action: ${{ fromJson(needs.matrix.outputs.matrix) }}    
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.action.version }}
+
+      - run: cp tests/requirements.txt-insecure requirements.txt
+
+      - uses: ./
+        id: scan-1
+        with:
+          api-key: ${{ secrets.SAFETY_API_KEY }}
+
+      - if: steps.scan-1.outcome == 'failure' && steps.scan-1.outputs.exit-code == '64'
+        run: exit 1
+
+  # Same as above, but for a poetry lock file
+  test-poetry-insecure:
+    needs: [ matrix ]
+    runs-on: ubuntu-latest
+    environment: main
+    strategy:
+      matrix:
+        action: ${{ fromJson(needs.matrix.outputs.matrix) }}    
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.action.version }}
+
+      - run: cp tests/poetry.lock-insecure poetry.lock && cp tests/pyproject.toml-insecure pyproject.toml
+
+      - uses: ./
+        id: scan-2
+        with:
+          api-key: ${{ secrets.SAFETY_API_KEY }}
+
+      - if: steps.scan-2.outcome == 'failure' && steps.scan-2.outputs.exit-code == '64'
+        run: exit 1
+
+  test-pipfile-insecure:
+    needs: [ matrix ]
+    runs-on: ubuntu-latest
+    environment: main
+    strategy:
+      matrix:
+        action: ${{ fromJson(needs.matrix.outputs.matrix) }}    
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.action.version }}
+
+      - run: cp tests/Pipfile.lock-insecure Pipfile.lock
+
+      - uses: ./
+        id: scan-3
+        with:
+          api-key: ${{ secrets.SAFETY_API_KEY }}
+
+      - if: steps.scan-3.outcome == 'failure' && steps.scan-3.outputs.exit-code == '64'
+        run: exit 1
+
+  test-requirements-txt-secure:
+    needs: [ matrix ]
+    runs-on: ubuntu-latest
+    environment: main
+    strategy:
+      matrix:
+        action: ${{ fromJson(needs.matrix.outputs.matrix) }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.action.version }}
+
+      - run: cp tests/requirements.txt-secure requirements.txt
+
+      - uses: ./
+        id: scan-4
+        with:
+          api-key: ${{ secrets.SAFETY_API_KEY }}
+
+  test-poetry-secure:
+    needs: [ matrix ]
+    runs-on: ubuntu-latest
+    environment: main
+    strategy:
+      matrix:
+        action: ${{ fromJson(needs.matrix.outputs.matrix) }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.action.version }}
+
+      - run: cp tests/poetry.lock-secure poetry.lock && cp tests/pyproject.toml-secure pyproject.toml
+
+      - uses: ./
+        id: scan-5
+        with:
+          api-key: ${{ secrets.SAFETY_API_KEY }}
+
+  # Same as above, but for a Pipfile.lock
+  test-pipfile-secure:
+    needs: [ matrix ]
+    runs-on: ubuntu-latest
+    environment: main
+    strategy:
+      matrix:
+        action: ${{ fromJson(needs.matrix.outputs.matrix) }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.action.version }}
+
+      - run: cp tests/Pipfile.lock-secure Pipfile.lock
+
+      - uses: ./
+        id: scan-6
+        with:
+          api-key: ${{ secrets.SAFETY_API_KEY }}
