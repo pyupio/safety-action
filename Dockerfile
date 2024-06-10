@@ -1,4 +1,4 @@
-FROM ghcr.io/pyupio/safety:3.0.0-615ef36
+FROM ghcr.io/pyupio/safety:3.2.3-a6de00f
 
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh

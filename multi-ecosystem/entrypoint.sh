@@ -80,8 +80,8 @@ output="${output//$'\n'/'%0A'}"  # Replace newline characters with %0A
 output="${output//$'\r'/'%0D'}"  # Replace carriage return characters with %0D
 
 # Output the exit code and CLI output for GitHub Actions to consume
-echo "{exit-code}={$exit_code}" >> $GITHUB_OUTPUT
-echo "{cli-output}={$output}" >> $GITHUB_OUTPUT
+echo "exit-code=$exit_code" >> $GITHUB_OUTPUT
+echo "cli-output=$output" >> $GITHUB_OUTPUT
 
 # Exit with the same code as the Safety CLI command
 exit $exit_code
