@@ -14,6 +14,7 @@ on:
           - v1
           - v2
           - v3
+          - beta
 
 jobs:
   tag:
