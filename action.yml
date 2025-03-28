@@ -19,6 +19,9 @@ inputs:
   debug:
     required: false
     default: false
+  safety-version:
+    required: false
+    default: ''
 
 outputs:
   cli-output:
@@ -37,6 +40,7 @@ runs:
     GITHUB_TOKEN: ${{ inputs.repo-token }}
     SAFETY_ACTION_VERSION: 1.0.0
     SAFETY_ACTION: true
+    SAFETY_VERSION: ${{ inputs.safety-version }}
     COLUMNS: 120
     FORCE_COLOR: 1
     NON_INTERACTIVE: 1
