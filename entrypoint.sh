@@ -7,6 +7,22 @@ if [[ "${SAFETY_API_KEY:-}" == "" ]]; then
     exit 1
 fi
 
+# Install Safety CLI if a version is specified
+# This is not cool but it's the only way to do it without making too many changes
+if [ -z "$SAFETY_VERSION" ]; then
+    echo "Using Safety CLI version from base image"
+elif [ "$SAFETY_VERSION" = "latest" ]; then
+    echo "Installing latest Safety CLI version (including pre-releases if available)"
+    python3 -m pip install --upgrade --pre safety > /dev/null 2>&1
+elif [ "$SAFETY_VERSION" = "stable" ]; then
+    echo "Installing latest Safety CLI stable version"
+    python3 -m pip install --upgrade safety > /dev/null 2>&1
+else
+    echo "Installing Safety CLI version $SAFETY_VERSION"
+    python3 -m pip install safety==$SAFETY_VERSION > /dev/null 2>&1
+fi
+
+export SAFETY_SOURCE_TYPE="urn:safetycli:cli:github:action"
 export SAFETY_OS_TYPE="docker action"
 export SAFETY_OS_RELEASE=""
 export SAFETY_OS_DESCRIPTION=""
