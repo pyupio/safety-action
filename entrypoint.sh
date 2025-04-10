@@ -86,7 +86,7 @@ set +e
 # sed -E ':a;N;$!ba;s/\n{3,}/\n\n/g'       replace any occurrence of three or more newlines (\n{3,}) with exactly two newlines (\n\n)
 # sed -E 's/\x1b\[\??25[lh]//g'            remove certain ANSI escape codes related to cursor control (like hiding/showing the cursor) from the output of a command
 exec 5>&1
-output=$(python -m safety ${SAFETY_DEBUG_ARG} --stage cicd scan --output="${SAFETY_ACTION_OUTPUT_FORMAT}" ${SAFETY_ACTION_ARGS} | stdbuf -o0 sed -E 's/\x1b\[\??25[lh]//g' | sed -E ':a;N;$!ba;s/\n{3,}/\n\n/g' | tee >(cat - >&5))
+output=$(python -m safety ${SAFETY_DEBUG_ARG} scan --output="${SAFETY_ACTION_OUTPUT_FORMAT}" ${SAFETY_ACTION_ARGS} | stdbuf -o0 sed -E 's/\x1b\[\??25[lh]//g' | sed -E ':a;N;$!ba;s/\n{3,}/\n\n/g' | tee >(cat - >&5))
 exit_code=$?
 
 # https://github.community/t/set-output-truncates-multiline-strings/16852/3
