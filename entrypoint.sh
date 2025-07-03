@@ -13,7 +13,7 @@ if [ -z "$SAFETY_VERSION" ]; then
     echo "Using Safety CLI version from base image"
 elif [ "$SAFETY_VERSION" = "latest" ]; then
     echo "Installing latest Safety CLI version (including pre-releases if available)"
-    python3 -m pip install --upgrade --pre safety > /dev/null 2>&1
+    python3 -m pip install --upgrade "safety>=3.0.0dev0" > /dev/null 2>&1
 elif [ "$SAFETY_VERSION" = "stable" ]; then
     echo "Installing latest Safety CLI stable version"
     python3 -m pip install --upgrade safety > /dev/null 2>&1
